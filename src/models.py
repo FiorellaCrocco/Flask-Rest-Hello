@@ -6,16 +6,19 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
-    favorite_character = db.relationship('Favorite_Character', backref='user')
-    favorite_planet = db.relationship('Favorite_Planet', backref='user')
+    is_active = db.Column(db.Boolean(), unique=False, nullable=False)
+    favorite_character = db.relationship('Favorite_Character', backref='user', lazy=True)
+#    favorite_planet = db.relationship('Favorite_Planet', backref="user" , lazy=True)
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return f'<User {self.email}>'
 
     def serialize(self):
         return {
-            "id": self.id,
-            "email": self.email,
+            "id":self.id,
+            "email":self.email,
+            #"favorite_character":list(map(lambda x: x.serialize(), self.favorite_character)),
+           # "favorite_planet":list(map(lambda x: x.serialize(), self.favorite_planet))
             # do not serialize the password, its a security breach
         }
 
@@ -29,9 +32,10 @@ class Character(db.Model):
     mass = db.Column(db.String(80), unique=False, nullable=False)
     skin_color = db.Column(db.String(80), unique=False, nullable=False)
     birth_year = db.Column(db.String(80), unique=False, nullable=False)
+    favorite_character = db.relationship('Favorite_Character', backref='character', lazy=True)
 
     def __repr__(self):
-        return '<Character %r>' % self.username
+        return '<Character %r>' % self.id
 
     def serialize(self):
         return {
@@ -57,6 +61,7 @@ class Planet(db.Model):
     terrain = db.Column(db.String(80), unique=False, nullable=False)
     surface_water = db.Column(db.String(80), unique=False, nullable=False)
     population = db.Column(db.String(80), unique=False, nullable=False)
+#    favorite_planet = db.relationship('Favorite_Planet', backref="planet" , lazy=True)
 
     def __repr__(self):
         return '<Planet %r>' % self.username
@@ -75,9 +80,10 @@ class Planet(db.Model):
             "population":self.population
         }
 
-class Favorite_Character(db.Model):
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-    character_id = db.Column(db.Integer, db.ForeignKey('character.id'), primary_key=True)
+class Favorite_Character(db.Model): # Error 1364 (HY000): Field 'id' doesn't have a default value
+    id = db.Column(db.Integer, primary_key=True)
+    character_id = db.Column(db.Integer, db.ForeignKey('character.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     
     def __repr__(self):
         return '<Favorite_Character %r>' % self.username
@@ -88,15 +94,16 @@ class Favorite_Character(db.Model):
             "character_id":self.character_id
         }
 
-class Favorite_Planet(db.Model):
-    user_id = db.Column(db.Integer, primary_key=True)
-    planet_id = db.Column(db.Integer, primary_key=True)
+#class Favorite_Planet(db.Model):
+#   id = db.Column(db.Integer, primary_key=True)
+#    planet_id = db.Column(db.Integer, db.ForeignKey('planet.id'))
+#   user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     
-    def __repr__(self):
-        return '<Favorite_Planet %r>' % self.username
+#    def __repr__(self):
+#        return '<Favorite_Planet %r>' % self.username
 
-    def serialize(self):
-        return {
-            "user_id":self.user_id,
-            "planet_id":self.character_id
-        }
+#   def serialize(self):
+#       return {
+#            "user_id":self.user_id,
+#            "planet_id":self.character_id
+#        }
