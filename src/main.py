@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User
+from models import db, User, Character, Planet, FavoriteCharacter
 #from models import Person
 
 app = Flask(__name__)
@@ -31,13 +31,51 @@ def sitemap():
     return generate_sitemap(app)
 
 @app.route('/user', methods=['GET'])
-def handle_hello():
+def get_user():
 
-    response_body = {
-        "msg": "Hello, this is your GET /user response "
-    }
+    user_query = User.query.all()
 
-    return jsonify(response_body), 200
+    all_user = list(map(lambda x: x.serialize(), user_query))
+
+    return jsonify(all_user), 200
+
+@app.route('/character', methods=['GET'])
+def get_character():
+
+    character_query = Character.query.all()
+
+    all_character = list(map(lambda x: x.serialize(), character_query))
+
+    return jsonify(all_character), 200
+
+@app.route('/planet', methods=['GET'])
+def get_planet():
+
+    planet_query = Planet.query.all()
+
+    all_planet = list(map(lambda x: x.serialize(), planet_query))
+
+    return jsonify(all_planet), 200
+
+@app.route('/character/<int:id>', methods=['GET'])
+def get_character_id(id):
+
+    character_query = Character.query.get(id)
+
+    character = character_query.serialize()
+
+    return jsonify(character), 200
+
+@app.route('/<email>/favorites', methods=['GET'])
+def get_favorite(email):
+
+    user = User.query.filter_by(email=email).first()
+
+    user_favorite_character = FavoriteCharacter.query.filter_by(user_id=user.id).all()
+
+    favorites = list(map(lambda x: x.serialize(), user_favorite_character))
+
+    return jsonify(favorites), 200
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
