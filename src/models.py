@@ -9,7 +9,7 @@ class User(db.Model):
     password = db.Column(db.String(80), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
     favorite_character = db.relationship('FavoriteCharacter', backref='user', lazy=True)
-#    favorite_planet = db.relationship('Favorite_Planet', backref="user" , lazy=True)
+    favorite_planet = db.relationship('Favorite_Planet', backref="user" , lazy=True)
 
     def __repr__(self):
         return '<User %r>' % self.email
@@ -62,7 +62,7 @@ class Planet(db.Model):
     terrain = db.Column(db.String(80), unique=False, nullable=False)
     surface_water = db.Column(db.String(80), unique=False, nullable=False)
     population = db.Column(db.String(80), unique=False, nullable=False)
- #   favorite_planet = db.relationship('Favorite_Planet', backref="planet" , lazy=True)
+    favorite_planet = db.relationship('Favorite_Planet', backref="planet" , lazy=True)
 
     def __repr__(self):
         return '<Planet %r>' % self.name
@@ -81,7 +81,7 @@ class Planet(db.Model):
             "population":self.population
         }
 
-class FavoriteCharacter(db.Model): # Error 1364 (HY000): Field 'id' doesn't have a default value
+class FavoriteCharacter(db.Model): # Error 1364 (HY000): Field 'id' doesn't have a default value / SOLUCIONADO
     id = db.Column(db.Integer, primary_key=True)
     character_id = db.Column(db.Integer, db.ForeignKey('character.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -96,7 +96,7 @@ class FavoriteCharacter(db.Model): # Error 1364 (HY000): Field 'id' doesn't have
             "character_id":self.character_id
         }
 
-""" class Favorite_Planet(db.Model):
+class Favorite_Planet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     planet_id = db.Column(db.Integer, db.ForeignKey('planet.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -108,4 +108,4 @@ class FavoriteCharacter(db.Model): # Error 1364 (HY000): Field 'id' doesn't have
         return {
             "user_id":self.user_id,
             "planet_id":self.character_id
-        } """
+        } 

@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Character, Planet, FavoriteCharacter
+from models import db, User, Character, Planet, FavoriteCharacter, Favorite_Planet
 #from models import Person
 
 app = Flask(__name__)
@@ -38,7 +38,7 @@ def get_user():
     all_user = list(map(lambda x: x.serialize(), user_query))
 
     return jsonify(all_user), 200
-
+   
 @app.route('/character', methods=['GET'])
 def get_character():
 
@@ -47,6 +47,15 @@ def get_character():
     all_character = list(map(lambda x: x.serialize(), character_query))
 
     return jsonify(all_character), 200
+
+@app.route('/character/<int:id>', methods=['GET'])
+def get_character_id(id):
+
+    character_query = Character.query.get(id)
+
+    character = character_query.serialize()
+
+    return jsonify(character), 200
 
 @app.route('/planet', methods=['GET'])
 def get_planet():
@@ -57,14 +66,14 @@ def get_planet():
 
     return jsonify(all_planet), 200
 
-@app.route('/character/<int:id>', methods=['GET'])
-def get_character_id(id):
+@app.route('/planet/<int:id>', methods=['GET'])
+def get_planet_id(id):
 
-    character_query = Character.query.get(id)
+    planet_query = Planet.query.get(id)
 
-    character = character_query.serialize()
+    planet = planet_query.serialize()
 
-    return jsonify(character), 200
+    return jsonify(planet), 200
 
 @app.route('/<email>/favorites', methods=['GET'])
 def get_favorite(email):
@@ -76,6 +85,17 @@ def get_favorite(email):
     favorites = list(map(lambda x: x.serialize(), user_favorite_character))
 
     return jsonify(favorites), 200
+ 
+#@app.route('/favorites/character/<int:character_id>', methods=['POST'])
+#def add_favorite(character_id):
+
+#    user = User.query.filter_by(email=email).first()
+
+#    user_favorite_character = FavoriteCharacter.query.filter_by(user_id=user.id).all()
+
+#    favorites = list(map(lambda x: x.serialize(), user_favorite_character))
+
+#    return jsonify(favorites), 200
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
