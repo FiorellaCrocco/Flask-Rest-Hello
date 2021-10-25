@@ -102,10 +102,8 @@ class Favorite_Planet(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
         
     def __repr__(self):
-        return '<Favorite_Planet %r>' % self.username
+        return '<Favorite_Planet %r>' % self.id
 
     def serialize(self):
         return {
-            "user_id":self.user_id,
-            "planet_id":self.character_id
-        } 
+            }
