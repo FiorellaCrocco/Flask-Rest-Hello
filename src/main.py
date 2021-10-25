@@ -92,9 +92,14 @@ def get_planet_id(id):
 
     return jsonify(planet), 200
 
-#HACERLA PRIVADA
+ ###########################################################################################
+
+#NECESITO UTILIZAR EL TOKEN PARA FILTRAR
 @app.route('/<email>/favorites', methods=['GET'])
+@jwt_required()
 def get_favorite(email):
+
+    current_user = get_jwt_identity()
 
     user = User.query.filter_by(email=email).first()
 
@@ -104,10 +109,25 @@ def get_favorite(email):
 
     return jsonify(favorites), 200
  
+
+ ###########################################################################################
+
+#FALTA FILTRAR MEDIANTE EL TOKEN Y CREAR EL CODE PARA QUE HAGA EL POST DE AGREGAR UN PERSONAJE FAVORITO AL USUARIO CON DICHO TOKEN
 @app.route('/favorites/character/<int:character_id>', methods=['POST'])
+@jwt_required()
 def add_favorite(character_id):
-    #USAR TOKEN / HACERLA PRIVADA
-    return jsonify(favorites), 200
+    current_user = get_jwt_identity()
+
+     
+    return jsonify(user.favorites), 200
+
+###########################################################################################
+#CREAR LA FUNCIÓN PARA FILTRAR MEDIANTE EL TOKEN Y CREAR EL CODE PARA QUE HAGA EL POST DE AGREGAR UN PLANETA FAVORITO AL USUARIO CON DICHO TOKEN
+###########################################################################################
+#CREAR LA FUNCIÓN PARA FILTRAR MEDIANTE EL TOKEN Y CREAR EL CODE PARA QUE HAGA EL DELETE DE QUITAR UN PERSONAJE FAVORITO AL USUARIO CON DICHO TOKEN
+###########################################################################################
+#CREAR LA FUNCIÓN PARA FILTRAR MEDIANTE EL TOKEN Y CREAR EL CODE PARA QUE HAGA EL DELETE DE QUITAR UN PLANETA FAVORITO AL USUARIO CON DICHO TOKEN
+###########################################################################################
 
 # Protect a route with jwt_required, which will kick out requests
 # without a valid JWT present.
@@ -116,7 +136,10 @@ def add_favorite(character_id):
 def protected():
     # Access the identity of the current user with get_jwt_identity
     current_user = get_jwt_identity()
+    
     return jsonify(logged_in_as=current_user), 200
+
+
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
