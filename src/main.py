@@ -92,22 +92,20 @@ def get_planet_id(id):
 
     return jsonify(planet), 200
 
- ###########################################################################################
-
-#NECESITO UTILIZAR EL TOKEN PARA FILTRAR
-@app.route('/<email>/favorites', methods=['GET'])
+@app.route('/users/favorites', methods=['GET'])
 @jwt_required()
-def get_favorite(email):
+def get_favorite():
 
     current_user = get_jwt_identity()
 
-    user = User.query.filter_by(email=email).first()
+    user = User.query.filter_by(id=current_user).first()
 
     user_favorite_character = FavoriteCharacter.query.filter_by(user_id=user.id).all()
+    user_favorite_planet = Favorite_Planet.query.filter_by(user_id=user.id).all()
 
-    favorites = list(map(lambda x: x.serialize(), user_favorite_character))
-
-    return jsonify(favorites), 200
+    favoritesCharacters = list(map(lambda x: x.serialize(), user_favorite_character))
+    favoritesPlanets = list(map(lambda x: x.serialize(), user_favorite_planet))
+    return jsonify(favoritesCharacters+favoritesPlanets), 200
  
 
  ###########################################################################################
@@ -115,11 +113,17 @@ def get_favorite(email):
 #FALTA FILTRAR MEDIANTE EL TOKEN Y CREAR EL CODE PARA QUE HAGA EL POST DE AGREGAR UN PERSONAJE FAVORITO AL USUARIO CON DICHO TOKEN
 @app.route('/favorites/character/<int:character_id>', methods=['POST'])
 @jwt_required()
-def add_favorite(character_id):
+def add_favorite_character(character_id):
     current_user = get_jwt_identity()
+    user = User.query.filter_by(id=current_user).first()
+    character = Character.query.get(character_id)
+    print(character)
+    if character is not None and user is not None:
+        fav_character = FavoriteCharacter(user_id=user.id, character_id=character.id)
+        db.session.add(fav_character)
+        db.session.commit()
+    return get_favorite()
 
-     
-    return jsonify(user.favorites), 200
 
 ###########################################################################################
 #CREAR LA FUNCIÓN PARA FILTRAR MEDIANTE EL TOKEN Y CREAR EL CODE PARA QUE HAGA EL POST DE AGREGAR UN PLANETA FAVORITO AL USUARIO CON DICHO TOKEN
