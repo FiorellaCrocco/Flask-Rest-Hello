@@ -107,9 +107,6 @@ def get_favorite():
     favoritesPlanets = list(map(lambda x: x.serialize(), user_favorite_planet))
     return jsonify(favoritesCharacters+favoritesPlanets), 200
  
-
- ###########################################################################################
-
 #FALTA FILTRAR MEDIANTE EL TOKEN Y CREAR EL CODE PARA QUE HAGA EL POST DE AGREGAR UN PERSONAJE FAVORITO AL USUARIO CON DICHO TOKEN
 @app.route('/favorites/character/<int:character_id>', methods=['POST'])
 @jwt_required()
@@ -124,9 +121,22 @@ def add_favorite_character(character_id):
         db.session.commit()
     return get_favorite()
 
-
-###########################################################################################
 #CREAR LA FUNCIÓN PARA FILTRAR MEDIANTE EL TOKEN Y CREAR EL CODE PARA QUE HAGA EL POST DE AGREGAR UN PLANETA FAVORITO AL USUARIO CON DICHO TOKEN
+@app.route('/favorites/planet/<int:planet_id>', methods=['POST'])
+@jwt_required()
+def add_favorite_planet(planet_id):
+    current_user = get_jwt_identity()
+    user = User.query.filter_by(id=current_user).first()
+    planet = Planet.query.get(planet_id)
+    print(planet)
+    if planet is not None and user is not None:
+        fav_planet = Favorite_Planet(user_id=user.id, planet_id=planet.id)
+        db.session.add(fav_planet)
+        db.session.commit()
+    return get_favorite()
+
+
+
 ###########################################################################################
 #CREAR LA FUNCIÓN PARA FILTRAR MEDIANTE EL TOKEN Y CREAR EL CODE PARA QUE HAGA EL DELETE DE QUITAR UN PERSONAJE FAVORITO AL USUARIO CON DICHO TOKEN
 ###########################################################################################
