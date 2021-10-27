@@ -135,12 +135,40 @@ def add_favorite_planet(planet_id):
         db.session.commit()
     return get_favorite()
 
-
-
 ###########################################################################################
 #CREAR LA FUNCIÓN PARA FILTRAR MEDIANTE EL TOKEN Y CREAR EL CODE PARA QUE HAGA EL DELETE DE QUITAR UN PERSONAJE FAVORITO AL USUARIO CON DICHO TOKEN
+
+@app.route('/favorites/character/<int:character_id>', methods=['DELETE'])
+@jwt_required()
+def delete_favorite_character(character_id):
+    current_user = get_jwt_identity()
+    user = User.query.filter_by(id=current_user).first()
+    character = FavoriteCharacter.query.get(character_id)
+    """ print(planet) """
+    if character is not None and user is not None:
+        print("prueba")
+        """ fav_planet = Favorite_Planet(user_id=user.id, planet_id=planet.id) """
+        db.session.delete(character)
+        db.session.commit()
+    return get_favorite()
+
 ###########################################################################################
 #CREAR LA FUNCIÓN PARA FILTRAR MEDIANTE EL TOKEN Y CREAR EL CODE PARA QUE HAGA EL DELETE DE QUITAR UN PLANETA FAVORITO AL USUARIO CON DICHO TOKEN
+
+@app.route('/favorites/planet/<int:planet_id>', methods=['DELETE'])
+@jwt_required()
+def delete_favorite_planet(planet_id):
+    current_user = get_jwt_identity()
+    user = User.query.filter_by(id=current_user).first()
+    planet = Favorite_Planet.query.get(planet_id)
+    print(planet)
+    if planet is not None and user is not None:
+        print("prueba")
+        """ fav_planet = Favorite_Planet(user_id=user.id, planet_id=planet.id) """
+        db.session.delete(planet)
+        db.session.commit()
+    return get_favorite()
+
 ###########################################################################################
 
 # Protect a route with jwt_required, which will kick out requests
